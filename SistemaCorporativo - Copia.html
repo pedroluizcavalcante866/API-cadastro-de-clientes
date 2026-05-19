@@ -179,6 +179,7 @@
             LimparCamposForm();
 		});
 
+        const API_BASE_URL = "https://localhost:44310";
 		ListarClientes();
 
 		function SalvarCadastro() {
@@ -223,7 +224,7 @@
             if (validar == 1) {
                 $.ajax({
                     type: "POST",
-                    url: "https://localhost:44310/api/Clientes/Salvar",
+                    url: API_BASE_URL + "/api/Clientes/Salvar",
                     data: JSON.stringify(Clientes),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
@@ -272,7 +273,7 @@
 		{
             $.ajax({
                 type: "DELETE",
-                url: "https://localhost:44310/api/Clientes/Deletar?IdClientes=" + IdClientes,
+                url: API_BASE_URL + "/api/Clientes/Deletar?IdClientes=" + IdClientes,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
 				success: function (OBJ) {
@@ -296,7 +297,7 @@
 
             $.ajax({
                 type: "GET",
-                url: "https://localhost:44310/api/Clientes/GetCliente",
+                url: API_BASE_URL + "/api/Clientes/GetCliente",
 				contentType: "application/json; charset=utf-8",
                 data: { IdClientes: IdClientes },
                 dataType: "json",
@@ -328,7 +329,7 @@
 		function ListarClientes() {
             $.ajax({
                 type: "GET",
-                url: "https://localhost:44310/api/Clientes/Listar",
+                url: API_BASE_URL + "/api/Clientes/Listar",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
 				success: function (OBJ) {
