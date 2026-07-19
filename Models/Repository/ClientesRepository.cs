@@ -17,7 +17,7 @@ namespace MyCadastro_Clientes.Models.Repository
             try
             {
 
-                using (SqlConnection connection = new SqlConnection("Data Source=GISLENENOTE;Initial Catalog=Corporativo;User Id=sa;Password=1234;Encrypt=false;TrustServerCertificate=true;"))
+                using (SqlConnection connection = new SqlConnection(_appConfig.ConnectionString))
                 {
                     connection.Open();
                     Console.WriteLine(connection.State);

@@ -1,8 +1,6 @@
 ﻿using MyCadastro_Clientes.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyCadastro_Clientes.Models.Repository;
-using System.Net;
 
 namespace MyCadastro_Clientes.Controllers
 {
@@ -10,20 +8,20 @@ namespace MyCadastro_Clientes.Controllers
     [ApiController]
     public class ClientesController : ControllerBase
     {
-        IConfiguration configuration = new ConfigurationBuilder()
-               .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-               .AddJsonFile("appsettings.json")
-               .Build();
+        private readonly AppConnection _appConfig;
+
+        // Injeção de dependência nativa do .NET
+        public ClientesController(IConfiguration configuration)
+        {
+            _appConfig = new AppConnection(configuration);
+        }
 
         [HttpPost("Salvar")]
-        public object Salvar([FromBody] Clientes cliente)
+        public IActionResult Salvar([FromBody] Clientes cliente)
         {
             try
             {
-                var appConfig = new AppConnection(configuration);
-
-                ClientesRepository clientes = new ClientesRepository(appConfig);
-
+                ClientesRepository clientes = new ClientesRepository(_appConfig);
                 var retorno = clientes.GetCliente(cliente.IdClientes);
 
                 if (retorno != null)
@@ -34,80 +32,72 @@ namespace MyCadastro_Clientes.Controllers
                 {
                     clientes.Salvar(cliente);
                 }
-             }
+                return Ok(new { mensagem = "Cliente salvo com sucesso!" });
+            }
             catch (Exception ex)
             {
+                return StatusCode(500, $"Erro interno: {ex.Message}");
             }
-
-            return null;
         }
 
         [HttpPost("Alterar")]
-        public object Alterar([FromBody] Clientes cliente)
+        public IActionResult Alterar([FromBody] Clientes cliente)
         {
             try
             {
-                var appConfig = new AppConnection(configuration);
-
-                ClientesRepository clientes = new ClientesRepository(appConfig);
+                ClientesRepository clientes = new ClientesRepository(_appConfig);
                 clientes.Atualizar(cliente);
+                return Ok(new { mensagem = "Cliente atualizado com sucesso!" });
             }
             catch (Exception ex)
             {
+                return StatusCode(500, $"Erro interno: {ex.Message}");
             }
-
-            return null;
         }
 
         [HttpGet("Listar")]
-        public object Listar()
+        public IActionResult Listar()
         {
-            List<Clientes> ListaCli = null;
             try
             {
-                var appConfig = new AppConnection(configuration);
-                ClientesRepository clientesRepo = new ClientesRepository(appConfig);
-                ListaCli = clientesRepo.Listar();
+                ClientesRepository clientesRepo = new ClientesRepository(_appConfig);
+                var listaCli = clientesRepo.Listar();
+                return Ok(listaCli);
             }
             catch (Exception ex)
             {
+                return StatusCode(500, $"Erro ao listar clientes: {ex.Message}");
             }
-
-            return ListaCli;
         }
 
         [HttpDelete("Deletar")]
-        public object Deletar(int IdClientes)
+        public IActionResult Deletar(int IdClientes)
         {
             try
             {
-                var appConfig = new AppConnection(configuration);
-                ClientesRepository clientes = new ClientesRepository(appConfig);
+                ClientesRepository clientes = new ClientesRepository(_appConfig);
                 bool retornoDelete = clientes.Deletar(IdClientes);
-                return retornoDelete;
+                return Ok(retornoDelete);
             }
             catch (Exception ex)
             {
+                return StatusCode(500, $"Erro ao deletar: {ex.Message}");
             }
-
-            return null;
         }
 
         [HttpGet("GetCliente")]
-        public object GetCliente(int IdClientes)
+        public IActionResult GetCliente(int IdClientes)
         {
             try
             {
-                var appConfig = new AppConnection(configuration);
-                ClientesRepository cliente = new ClientesRepository(appConfig);
+                ClientesRepository cliente = new ClientesRepository(_appConfig);
                 var retorno = cliente.GetCliente(IdClientes);
-                return retorno;
+                return Ok(retorno);
             }
             catch (Exception ex)
             {
+                return StatusCode(500, $"Erro ao buscar cliente: {ex.Message}");
             }
-
-            return null;
         }
     }
 }
